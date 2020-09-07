@@ -14,13 +14,13 @@
 /* jshint esversion: 8 */
 
 async function loginPage() {
-  let content = GM.getValue("content", "");
+  let content = GM.getValue("content", {});
   let hostname = GM.getValue("hostname", "");
   content = await content;
   hostname = await hostname;
   
   // automatically fill login info and submit
-  if (content !== "" && hostname === location.hostname) {
+  if (content !== {} && hostname === location.hostname) {
     let now = Date.now();
     let lastAttempt = await GM.getValue("lastAttempt", 0);
     
@@ -41,7 +41,8 @@ async function loginPage() {
       GM.setValue("lastAttempt", now);
   
       console.log("Logging in...");
-      deserialize($('form'), content)
+      content.k = getRandomId();
+      deserialize($('form'), $.param(content))
       $('form').submit();
     }
   }
@@ -50,7 +51,7 @@ async function loginPage() {
   else {
     document.forms[0].onsubmit = async function(){
       console.log("We're on login page, record login info");
-      let content = $("form").serialize();
+      let content = $("form").serializeArray();
       GM.setValue("content", content);
       GM.setValue("hostname", location.hostname);
     };
@@ -70,7 +71,8 @@ async function autoLogin() {
   
   console.log("Logging in...");
   
-  $.post('https://' + hostname + '/intr/Module/Identification/Login/Login.aspx', content);
+  content.k = getRandomId();
+  $.post('https://' + hostname + '/intr/Module/Identification/Login/Login.aspx', $.param(content));
 }
 
 (async function() {
@@ -93,7 +95,12 @@ async function autoLogin() {
 })();
 
 
-function deserialize (f, data) {
+function getRandomId() {
+  return Math.floor(900000000000000000000 + Date.now());
+}
+
+
+function deserialize(f, data) {
     var map = {},
         find = function (selector) { return f.is("form") ? f.find(selector) : f.filter(selector); };
     //Get map of values
