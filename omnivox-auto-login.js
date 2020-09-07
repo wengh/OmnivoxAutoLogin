@@ -8,6 +8,7 @@
 // @match       *://*.omnivox.ca/*
 // @grant       GM.getValue
 // @grant       GM.setValue
+// @grant       GM.deleteValue
 // @run-at      document-idle
 // ==/UserScript==
 /* jshint esversion: 8 */
@@ -20,6 +21,21 @@ async function loginPage() {
   
   // automatically fill login info and submit
   if (content !== "" && hostname === location.hostname) {
+    let now = Date.now();
+    let lastAttempt = parseInt(GM.getValue("lastAttempt", "0"));
+    
+    if (lastAttempt - now < 5000) {
+      // less than 5 seconds between 2 login attempts
+      // probably the wrong password, clear everything
+      GM.deleteValue("content");
+      GM.deleteValue("hostname");
+      GM.deleteValue("lastAttempt");
+      return
+    }
+    else {
+      GM.setValue("lastAttempt", now);
+    }
+    
     console.log("Logging in...");
     deserialize($('form'), content)
     $('form').submit();
