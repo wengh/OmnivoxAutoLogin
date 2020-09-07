@@ -19,7 +19,7 @@ async function loginPage() {
   hostname = await hostname;
   
   // automatically fill login info and submit
-  if (content !== "" && hostname !== "") {
+  if (content !== "" && hostname === location.hostname) {
     console.log("Logging in...");
     deserialize($('form'), content)
     $('form').submit();
