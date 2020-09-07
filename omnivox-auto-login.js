@@ -3,7 +3,7 @@
 // @namespace   why
 // @description Save password and automatically log in on omnivox.ca
 // @author      WengH
-// @version     1.2
+// @version     1.3
 // @icon        https://marianopolis.omnivox.ca/intr/UI/Themes/Omnivox_Defaut/images/header-logo-omnivox.svg
 // @match       *://*.omnivox.ca/*
 // @grant       GM.getValue
@@ -22,11 +22,16 @@ async function loginPage() {
   // automatically fill login info and submit
   if (content !== "" && hostname === location.hostname) {
     let now = Date.now();
-    let lastAttempt = parseInt(GM.getValue("lastAttempt", "0"));
+    let lastAttempt = await GM.getValue("lastAttempt", 0);
     
-    if (lastAttempt - now < 5000) {
-      // less than 5 seconds between 2 login attempts
+    console.log(now - lastAttempt);
+    
+    if (now - lastAttempt < 10000) {
+      // less than 10 seconds between 2 login attempts
       // probably the wrong password, clear everything
+      
+      console.log("Login timeout, clearing saved information...");
+      
       GM.deleteValue("content");
       GM.deleteValue("hostname");
       GM.deleteValue("lastAttempt");
@@ -34,13 +39,11 @@ async function loginPage() {
     }
     else {
       GM.setValue("lastAttempt", now);
+  
+      console.log("Logging in...");
+      deserialize($('form'), content)
+      $('form').submit();
     }
-    
-    console.log("Logging in...");
-    deserialize($('form'), content)
-    $('form').submit();
-    
-    return;
   }
   
   // capture login info otherwise
