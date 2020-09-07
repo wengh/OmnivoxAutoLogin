@@ -103,10 +103,21 @@ async function autoLogin() {
   else {
     console.log("Automatic login activated");
     
-    autoLogin();
-    setInterval(autoLogin, 600000);
+    setIntervalRealTime(autoLogin, 600000);
   }
 })();
+
+
+function setIntervalRealTime(func, interval) {
+  let last = 0;
+  setInterval(function() {
+    let now = Date.now();
+    if (now - last > interval) {
+      last = now;
+      func();
+    }
+  }, 1000);
+}
 
 
 function deleteCookies() {
