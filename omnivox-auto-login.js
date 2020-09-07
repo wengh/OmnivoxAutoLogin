@@ -3,7 +3,7 @@
 // @namespace   why
 // @description Save password and automatically log in on omnivox.ca
 // @author      WengH
-// @version     1.4
+// @version     1.5
 // @icon        https://marianopolis.omnivox.ca/intr/UI/Themes/Omnivox_Defaut/images/header-logo-omnivox.svg
 // @match       *://*.omnivox.ca/*
 // @grant       GM.getValue
